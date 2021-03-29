@@ -22,10 +22,7 @@ end
 def jobs_with_language(languages)
   puts "\nShowing links of jobs that contain language: #{languages.join(', ')} \n\n"
   bind_variables = languages.map { |language| [(language = "%#{language.downcase}%"), language, language] }.flatten
-  Job.where(build_query_from_languages(languages), *bind_variables)
-     .pluck(:href).each do |href|
-    p href
-  end
+  Job.where(build_query_from_languages(languages), *bind_variables).pluck(:href).each { |href| p href }
 end
 
 def language_occurences(_args)
