@@ -48,7 +48,11 @@ def create_languages_table
 end
 
 def fetch_links_from_gjirafa(browser, job_links)
-  browser.navigate.to 'https://gjirafa.com/Top/Pune?k=Teknologji%20Informative%20-%20IT'
+  path = proc do |page = nil|
+    f = page == nil ? '?k=Teknologji%20Informative%20-%20IT' : "?f=#{page}&k=Teknologji%20Informative%20-%20IT"
+    "https://gjirafa.com/Top/Pune#{f}"
+  end
+  browser.navigate.to path.call
   browser.switch_to.frame browser.find_element(id: 'iframe_cookie')
   browser.find_element(xpath: '/html/body/div/div/button').click
   browser.switch_to.default_content
@@ -58,9 +62,7 @@ def fetch_links_from_gjirafa(browser, job_links)
     jobs.each { |job| job_links << job.find_element(tag_name: 'a').attribute('href') }
     break if number_of_pages == current_page_number
 
-    next_page_button = browser.find_element(id: 'paraP')
-    browser.action.move_to(next_page_button).perform
-    next_page_button.click
+    browser.navigate.to path.call(current_page_number)
   end
 end
 
